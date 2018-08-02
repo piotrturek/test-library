@@ -1,0 +1,1 @@
+OmniAuth.config.full_host = Rails.env.production? ? 'https://morning-waters-15327.herokuapp.com/' : 'http://localhost:3000'

@@ -1,0 +1,29 @@
+<h1>Historia wypożyczeń</h1>
+
+<div class="table-responsive">
+  <table class="table table-striped table-sm">
+    <thead>
+      <tr>
+        <th>Książka</th>
+        <th>Czytelnik</th>
+        <th>Data wypożyczenia</th>
+        <th>Data zwrotu</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @library_borrows.each do |library_borrow| %>
+      <tr>
+        <td><%= library_borrow.book %></td>
+        <td><%= library_borrow.user %></td>
+        <td><%= library_borrow.borrow_date %></td>
+        <td><%= library_borrow.draw_date %></td>
+      </tr>
+      <% end %>
+    </tbody>
+    <tfoot>
+      <tr>
+        <td colspan="4"></td>
+      </tr>
+    </tfoot>
+  </table>
+</div>

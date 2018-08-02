@@ -1,0 +1,15 @@
+<nav class="col-md-2 d-none d-md-block bg-light sidebar">
+  <div class="sidebar-sticky">
+    <ul class="nav flex-column">
+      <li class="nav-item">
+        <%= link_to "Dashboard", root_path, :class => "nav-link #{'active' if @current_menu == 'dashboard'}" %>
+      </li>
+      <li class="nav-item">
+        <%= link_to "Książki", library_books_path, :class => "nav-link #{'active' if @current_menu == 'books'}" %>
+      </li>
+      <li class="nav-item">
+        <%= link_to "Historia wypożyczeń", library_borrows_path, :class => "nav-link #{'active' if @current_menu == 'borrows'}" %>
+      </li>
+    </ul>
+  </div>
+</nav>

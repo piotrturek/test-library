@@ -1,0 +1,18 @@
+<% if user_signed_in? %>
+  <nav class="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow">
+    <div class="navbar-user">Witaj <%= current_user %> !</div>
+    
+    <ul class="navbar-nav px-3">
+      <li class="nav-item text-nowrap">
+        <%= link_to 'Wyloguj', destroy_user_session_path, :method => :delete, class: 'btn btn-sm btn-outline-secondary' %>
+      </li>
+    </ul>
+  </nav>
+<% end %>
+
+  <% if notice %>
+    <p class="notice"><%= notice %></p>
+  <% end %>
+  <% if alert %>
+    <p class="alert"><%= alert %></p>
+  <% end %>
