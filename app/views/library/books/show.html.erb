@@ -11,8 +11,15 @@
       <em><%= simple_format(@library_book.lead) %></em>
       <footer class="blockquote-footer">Autor: <cite title="<%= @library_book.author %>"><%= @library_book.author %></cite></footer>
     </blockquote><br/>
+
     <% if @library_book.available? && @library_book.is_active? %>
-      <a href="#" class="btn btn-primary">Wypożycz!</a>
+
+      <%= link_to 'Wypożycz', borrow_book_library_book_path(@library_book), class: 'btn btn-primary' %>
+
+    <% elsif @library_book.current_holder_id == current_user.id %>
+
+      <%= link_to 'Zwróć', return_book_library_book_path(@library_book), class: 'btn btn-success' %>
+
     <% end %>
 
   </div>

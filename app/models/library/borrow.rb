@@ -13,6 +13,17 @@
 
 class Library::Borrow < ApplicationRecord
 
+
+
+  belongs_to :user
+  belongs_to :book, class_name: "::Library::Book"
+
   default_scope { order(created_at: :desc) }
+
+  scope :not_returned, -> {where('draw_date IS NULL')}
+
+  def can_be_returned?
+    return self.draw_date.blank? ? true : false
+  end
 
 end

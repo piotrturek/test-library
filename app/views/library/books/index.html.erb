@@ -23,12 +23,17 @@
       <tr>
         <td><%= link_to library_book.name, library_book %></td>
         <td><%= library_book.author %></td>
-        <td><%= library_book.is_active %></td>
-        <td><%= library_book.aasm_state %></td>
+        <td><%= library_book.is_active? ? 'tak' : 'nie' %></td>
+        <td>
+          <%= library_book.aasm_state %>
+          <% if library_book.available? && library_book.is_active? %>  
+            <%= link_to 'Wypożycz', borrow_book_library_book_path(library_book) %>
+          <% end %>
+        </td>
         <td>
           <% if current_user == library_book.author %>
             <%= link_to 'Edytuj', edit_library_book_path(library_book), :class => 'fa fa-pencil', title: 'Edytuj' %>
-            <%= link_to 'Usuń', library_book, method: :delete, data: { confirm: 'Are you sure?' } %>
+            <%= link_to 'Usuń', library_book, method: :delete, data: { confirm: 'Czy jesteś pewien?' } %>
           <% end %>
         </td>
       </tr>

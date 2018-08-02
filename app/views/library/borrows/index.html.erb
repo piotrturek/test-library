@@ -15,14 +15,14 @@
       <tr>
         <td><%= library_borrow.book %></td>
         <td><%= library_borrow.user %></td>
-        <td><%= library_borrow.borrow_date %></td>
-        <td><%= library_borrow.draw_date %></td>
+        <td><%= datetime(library_borrow.borrow_date) %></td>
+        <td><%= datetime(library_borrow.draw_date) %></td>
       </tr>
       <% end %>
     </tbody>
     <tfoot>
       <tr>
-        <td colspan="4"></td>
+        <td colspan="4" class="text-center"><%= will_paginate @library_borrows %></td>
       </tr>
     </tfoot>
   </table>

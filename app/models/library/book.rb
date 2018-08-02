@@ -18,13 +18,13 @@ class Library::Book < ApplicationRecord
   validates :name, :lead, :author, presence: true
 
   belongs_to :author, class_name: "User"
-  has_many :boorows, class_name: '::Library::Borrow'
+  has_many :borrows, class_name: '::Library::Borrow', dependent: :destroy
 
   default_scope { order(created_at: :desc) }
 
   aasm do
     state :available, :initial => true
-    state :borrowed, :before_enter => :resuply_stock
+    state :borrowed
 
     event :borrow do
       transitions :from => :available, :to => :borrowed
@@ -34,6 +34,15 @@ class Library::Book < ApplicationRecord
       transitions :from => :borrowed, :to => :available
     end
 
+  end
+
+  def current_holder_id
+    borrow = borrows.not_returned.first
+    borrow.user_id
+  end
+
+  def to_s
+    "#{name} (#{author})"
   end
 
 end

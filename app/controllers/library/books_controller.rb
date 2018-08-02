@@ -64,11 +64,40 @@ class Library::BooksController < ApplicationController
   end
 
   def borrow_book
-    
+
+    if @library_book.available?
+
+      borrow = current_user.borrows.new(book_id: @library_book.id, borrow_date: DateTime.now())
+
+      if borrow.save
+        @library_book.borrow!
+        redirect_to @library_book, notice: 'Książka została wypożyczona'
+      else
+        redirect_to library_books_url, alert: 'Wystąpił nieoczekiwany błąd.'
+      end
+    else
+      redirect_to library_books_url, alert: 'Książka niedostępna.'
+    end
+
+
   end
 
   def return_book
-    
+
+    if @library_book.borrowed?
+
+      borrow = current_user.borrows.find_by_book_id(@library_book.id)
+
+      if borrow.update({:draw_date => DateTime.now()})
+        @library_book.return!
+        redirect_to @library_book, notice: 'Książka została zwrócona'
+      else
+        redirect_to library_books_url, alert: 'Wystąpił nieoczekiwany błąd.'
+      end
+    else
+      redirect_to library_books_url, alert: 'Książka jest dostępna do wypożyczenia.'
+    end
+
   end
 
   private
