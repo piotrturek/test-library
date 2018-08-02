@@ -11,8 +11,8 @@
 #  updated_at  :datetime         not null
 #
 
-require 'rails_helper'
+#require 'rails_helper'
 
-RSpec.describe Library::Borrow, type: :model do
-  pending "add some examples to (or delete) #{__FILE__}"
-end
+#RSpec.describe Library::Borrow, type: :model do
+#  pending "add some examples to (or delete) #{__FILE__}"
+#end

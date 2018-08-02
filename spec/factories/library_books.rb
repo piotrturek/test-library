@@ -14,10 +14,20 @@
 
 FactoryBot.define do
   factory :library_book, class: 'Library::Book' do
-    name "MyString"
-    author_id 1
-    lead "MyText"
-    is_active false
-    aasm_state "MyString"
+    name "Book title"
+    lead "Book lead"
+    is_active true
+    aasm_state "available"
+
+    association :author, factory: :user
+
+    trait :borrowed do
+      aasm_state "borrowed"
+      after :create do |book, evaluator|
+        create(:library_borrow, book: book, user_id: 1, draw_date: nil)
+      end
+    end
+
   end
+
 end

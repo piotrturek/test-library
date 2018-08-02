@@ -20,6 +20,15 @@
 
 FactoryBot.define do
   factory :user do
-    
+    name 'Testowy User'
+    email 'test@garwo.pl'
+    password 'password'
+
+    initialize_with { User.find_or_create_by(id: 1)}
+
+    after :create do |user, evaluator|
+      create_list(:library_book, 3, author: user)
+    end
+
   end
 end

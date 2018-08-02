@@ -13,9 +13,12 @@
 
 FactoryBot.define do
   factory :library_borrow, class: 'Library::Borrow' do
-    book_id 1
-    user_id 1
-    borrow_date "2018-07-31 18:31:13"
-    draw_date "2018-07-31 18:31:13"
+    borrow_date {3.days.ago}
+    draw_date {2.days.ago}
+
+    association :book, factory: :library_book
+    association :user, factory: :user
+
+    initialize_with { Library::Borrow.find_or_create_by(id: 1)}
   end
 end

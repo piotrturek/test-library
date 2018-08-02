@@ -25,117 +25,121 @@ require 'rails_helper'
 
 RSpec.describe Library::BooksController, type: :controller do
 
-  # This should return the minimal set of attributes required to create a valid
-  # Library::Book. As you add validations to Library::Book, be sure to
-  # adjust the attributes here as well.
-  let(:valid_attributes) {
-    skip("Add a hash of attributes valid for your model")
-  }
+  before(:each) do
+    user_sign_in
+  end 
 
-  let(:invalid_attributes) {
-    skip("Add a hash of attributes invalid for your model")
-  }
+  describe "CRUD for library_books" do
 
-  # This should return the minimal set of values that should be in the session
-  # in order to pass any filters (e.g. authentication) defined in
-  # Library::BooksController. Be sure to keep this updated too.
-  let(:valid_session) { {} }
+    context "CREATE for valid attributes" do
 
-  describe "GET #index" do
-    it "returns a success response" do
-      book = Library::Book.create! valid_attributes
-      get :index, params: {}, session: valid_session
-      expect(response).to be_success
-    end
-  end
-
-  describe "GET #show" do
-    it "returns a success response" do
-      book = Library::Book.create! valid_attributes
-      get :show, params: {id: book.to_param}, session: valid_session
-      expect(response).to be_success
-    end
-  end
-
-  describe "GET #new" do
-    it "returns a success response" do
-      get :new, params: {}, session: valid_session
-      expect(response).to be_success
-    end
-  end
-
-  describe "GET #edit" do
-    it "returns a success response" do
-      book = Library::Book.create! valid_attributes
-      get :edit, params: {id: book.to_param}, session: valid_session
-      expect(response).to be_success
-    end
-  end
-
-  describe "POST #create" do
-    context "with valid params" do
-      it "creates a new Library::Book" do
+      it "create action should give new library_book" do
         expect {
-          post :create, params: {library_book: valid_attributes}, session: valid_session
+          post :create, params: {library_book: attributes_for(:library_book)}
         }.to change(Library::Book, :count).by(1)
+        book = assigns(:library_book)
+        expect(book.valid?).to be
+        expect(response).to redirect_to(library_book_path(book))
       end
 
-      it "redirects to the created library_book" do
-        post :create, params: {library_book: valid_attributes}, session: valid_session
-        expect(response).to redirect_to(Library::Book.last)
-      end
-    end
-
-    context "with invalid params" do
-      it "returns a success response (i.e. to display the 'new' template)" do
-        post :create, params: {library_book: invalid_attributes}, session: valid_session
+      it "POST #create with invalid params and returns a success response (i.e. to display the 'new' template)" do
+        post :create, params: {library_book: attributes_for(:library_book, {lead: ''})}
         expect(response).to be_success
       end
-    end
-  end
 
-  describe "PUT #update" do
-    context "with valid params" do
-      let(:new_attributes) {
-        skip("Add a hash of attributes valid for your model")
-      }
-
-      it "updates the requested library_book" do
-        book = Library::Book.create! valid_attributes
-        put :update, params: {id: book.to_param, library_book: new_attributes}, session: valid_session
-        book.reload
-        skip("Add assertions for updated state")
-      end
-
-      it "redirects to the library_book" do
-        book = Library::Book.create! valid_attributes
-        put :update, params: {id: book.to_param, library_book: valid_attributes}, session: valid_session
-        expect(response).to redirect_to(book)
-      end
     end
 
-    context "with invalid params" do
-      it "returns a success response (i.e. to display the 'edit' template)" do
-        book = Library::Book.create! valid_attributes
-        put :update, params: {id: book.to_param, library_book: invalid_attributes}, session: valid_session
+    context "SHOW / UPDATE / EDIT / DESTROY => " do
+      before(:each) do
+        @book = FactoryBot.create(:library_book)
+      end
+
+      it "GET #index and returns a success response" do
+        get :index
+        books = assigns(:library_books)
+        assert_equal Library::Book.all.count, books.count
         expect(response).to be_success
       end
+
+      it "destroy and redirect to library_books list" do
+        expect {
+          post :destroy, params: {id: @book}
+        }.to change(Library::Book, :count).by(-1)
+        expect(response).to redirect_to(library_books_path)
+      end
+
+      it "GET #show and returns a success response" do
+        get :show, params: {id: @book.to_param}
+        expect(response).to be_success
+      end
+
+      it "GET #new and returns a success response" do
+        get :new, params: {}
+        expect(response).to be_success
+      end
+
+      it "GET #edit and returns a success response" do
+        get :edit, params: {id: @book.to_param}
+        expect(response).to be_success
+      end
+
+
+      it "PUT #update with valid params" do
+        put :update, params: {id: @book.to_param, library_book: attributes_for(:library_book)}
+        @book.reload
+        expect(response).to redirect_to(@book)
+      end
+      
+      it "PUT #update with invalid params returns a success response (i.e. to display the 'edit' template)" do
+        put :update, params: {id: @book.to_param, library_book: attributes_for(:library_book, {lead: ''})}
+        assert_template :edit
+        expect(response).to be_success
+      end
+
+
+      it "borrow book and redirect" do
+        get :borrow_book, params: {id: @book}
+        expect(flash[:notice]).to match(/wypożyczona/)
+        expect(response).to redirect_to(@book)
+      end
+
+
+      describe "with borrowed book" do
+
+        before(:each) do
+          @borrowed_book = FactoryBot.create(:library_book, :borrowed)
+        end
+
+        it "return book and redirect" do
+          get :return_book, params: {id: @borrowed_book}
+          expect(flash[:notice]).to match(/zwrócona/)
+          expect(response).to redirect_to(@borrowed_book)
+        end
+
+        it "try borrow book but redirect to books list" do
+          get :borrow_book, params: {id: @borrowed_book}
+          expect(flash[:alert]).to match(/niedostępna/)
+          expect(response).to redirect_to(library_books_url)
+        end
+
+      end
+
+      it "DELETE #destroy and destroys the requested library_book" do
+        expect {
+          delete :destroy, params: {id: @book.to_param}
+        }.to change(Library::Book, :count).by(-1)
+      end
+
+      it "DELETE #destroy and redirects to the library_books list" do
+        delete :destroy, params: {id: @book.to_param}
+        expect(response).to redirect_to(library_books_url)
+      end
+
+
     end
+
+
   end
 
-  describe "DELETE #destroy" do
-    it "destroys the requested library_book" do
-      book = Library::Book.create! valid_attributes
-      expect {
-        delete :destroy, params: {id: book.to_param}, session: valid_session
-      }.to change(Library::Book, :count).by(-1)
-    end
-
-    it "redirects to the library_books list" do
-      book = Library::Book.create! valid_attributes
-      delete :destroy, params: {id: book.to_param}, session: valid_session
-      expect(response).to redirect_to(library_books_url)
-    end
-  end
 
 end
