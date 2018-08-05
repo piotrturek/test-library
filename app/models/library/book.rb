@@ -38,7 +38,7 @@ class Library::Book < ApplicationRecord
 
   def current_holder_id
     borrow = borrows.not_returned.first
-    borrow.user_id
+    borrow.try(:user_id)
   end
 
   def to_s
